@@ -1,0 +1,11 @@
+# Temporary files
+tmp_rovodev_*
+config_clean.yml
+config_tail.yml
+
+# Session data
+sessions/
+*.log
+
+# OS files
+.DS_Store
