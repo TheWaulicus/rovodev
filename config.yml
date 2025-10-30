@@ -97,26 +97,169 @@ toolPermissions:
     git_add(repo_path, files): allow
     git_commit(repo_path, message): allow
     get_atlassian_site_urls(): allow
-cat: tmp_rovodev_bash_commands.yml: No such file or directory
-  # workspace
-  allowedExternalPaths:
-  - /Users/sherman/Bitbucket
-  - /Users/sherman/.rovodev
-  - /Users/sherman/.ssh
+  bash:
+    # Default permission for bash commands not explicitly listed
+    default: ask
+    # List of specific bash commands with their permission settings
+    commands:
+    # UNTRUSTED PATTERNS - Explicitly ask for permission (highest precedence)
+    # - Use these patterns to define exceptions to the trusted patterns below.
+    # - Include commands that can modify or delete files, or perform other potentially harmful actions
+    # fd
+    - command: ^fd[^|]*-x\s
+      permission: ask
+    - command: ^fd[^|]*-x$
+      permission: ask
+    - command: ^fd[^|]*--exec\s
+      permission: ask
+    - command: ^fd[^|]*--exec$
+      permission: ask
+    # find
+    - command: ^find.*-delete
+      permission: ask
+    # find -exec with arbitrary commands (not safe read-only tools)
+    - command: ^find.*-exec\s+(?!grep\s|cat\s|head\s|tail\s|wc\s|sort\s|uniq\s|cut\s|awk\s|echo\s|ls\s|du\s|file\s|stat\s|basename\s|dirname\s).*
+      permission: ask
+    - command: ^find.*-execdir
+      permission: ask
+    # git
+    - command: ^git.*push.*--force
+      permission: ask
+    - command: ^git.*reset.*--hard
+      permission: ask
+    - command: ^git.*clean.*-f
+      permission: ask
+    - command: ^git.*rm.*
+      permission: ask
+    # package manager
+    - command: ^(yarn|npm).*install.*
+      permission: ask
+    - command: ^(yarn|npm).*(add|remove|uninstall).*
+      permission: ask
+    - command: ^(yarn|npm).*(publish|link|unlink).*
+      permission: ask
+    - command: ^(yarn|npm).*global.*
+      permission: ask
+    # awk operations with file modification risk (output redirection, in-place editing)
+    - command: ^awk.*(>|--?in-place).*
+      permission: ask
+    # Git operations with modification/remote interaction risks (push, revert, merge, rebase, reset --hard, clean -f, rm)
+    - command: ^git.*(push|revert|merge|rebase|reset.*--hard|clean.*-f|rm).*
+      permission: ask
+    # Git branch operations with destructive potential (force delete, move/rename)
+    - command: ^git\s+branch\s+.*(-D|-M).*
+      permission: ask
+    # Python3 arbitrary code execution (-c flag)
+    - command: ^python3\s+-c\s+.*
+      permission: ask
+    # Output redirection to files (security exception - prevents data exfiltration)
+    - command: .*>\s*(?!.*dev/null).*
+      permission: ask
 
-announcementTracking:
-  announcementViewCounts: {}
-
-sessionFeedback:
-  permanentlyDisabled: false
-  lastFeedbackAsked: null
-
-atlassianBillingSite:
-  siteUrl: https://hello.atlassian.net
-
-smartTasks:
-  # Enable Smart Tasks discovery
-  enabled: true
-  # List of task discovery sources
-  sources:
-  - filesystem
+    # TRUSTED PATTERNS - Allow automatically (lower precedence)
+    # Safe read-only operations with logical operators (&&, ||)
+    - command: ^(wc|head|tail|cat|grep|ls|find|ps|yamllint|file|stat|test|du|basename|dirname)\s+.*(\|\||&&)\s*(echo|true|false).*
+      permission: allow
+    # Safe command chains (all basic commands including text processing tools)
+    - command: ^(echo|du|ls|eza|head|cat|bat|tail|grep|rg|wc|sort|uniq|cut|awk|ps|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?(\s*\|\s*(echo|du|ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
+      permission: allow
+    # Safe commands with /dev/null redirection (error suppression only)
+    - command: ^(echo|du|ls|eza|head|cat|bat|tail|grep|rg|wc|sort|uniq|cut|awk|find|fd|ps|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?(\s*\|\s*(echo|du|ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*\s*(2>/dev/null|&>/dev/null|>/dev/null)(\s*\|\|\s*echo.*)?$
+      permission: allow
+    # fd commands (safe patterns pass, risky variants caught above)
+    - command: ^fd(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#+()!|=]*)?(\s*\|\s*(ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
+      permission: allow
+    # find commands (safe patterns pass, risky variants caught above)
+    - command: ^find(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#+()!|=]*)?(\s*\|\s*(ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
+      permission: allow
+    # find -exec with safe read-only tools (simplified for performance)
+    - command: ^find.*-exec\s+(grep|cat|head|tail|wc|sort|uniq|cut|awk|echo|ls|du|file|stat|basename|dirname)\s+.*
+      permission: allow
+    - command: cat.*
+      permission: allow
+    - command: echo.*
+      permission: allow
+    - command: git diff.*
+      permission: allow
+    - command: git log.*
+      permission: allow
+    - command: pwd
+      permission: allow
+    - command: git remote -v
+      permission: allow
+    # Safe git repository operations
+    - command: ^git add.*
+      permission: allow
+    - command: ^git commit.*
+      permission: allow
+    - command: ^git checkout.*
+      permission: allow
+    - command: ^git pull.*
+      permission: allow
+    - command: ^git fetch.*
+      permission: allow
+    - command: ^git rev-list.*
+      permission: allow
+    - command: ^git rev-parse.*
+      permission: allow
+    - command: ^git merge.*--ff-only
+      permission: allow
+    - command: ^git branch.*
+      permission: allow
+    # Safe package manager operations
+    - command: ^(yarn|npm) (build|test|run).*
+      permission: allow
+    - command: ^yarn (info|why|list).*
+      permission: allow
+    - command: ^npm (ls|list).*
+      permission: allow
+    - command: ^yarn go.*
+      permission: allow
+    - command: find\s+.*\|\s*(grep|wc|head|cat|tail|sort|uniq|cut|awk|file|stat|basename|dirname)\s+.*
+      permission: allow
+    - command: find\s+.*\|\s*(grep|wc|head|cat|tail|sort|uniq|cut|awk|file|stat|basename|dirname)\s+.*\|\s*(grep|wc|head|cat|tail|sort|uniq|cut|awk|file|stat|basename|dirname)\s*.*
+      permission: allow
+    - command: yarn lint --color
+      permission: allow
+    - command: yarn lint
+      permission: allow
+    - command: mvn.*
+      permission: allow
+    - command: npx.*
+      permission: allow
+    - command: git rev-parse --is-inside-work-tree
+      permission: allow
+    # Simple cd commands (directory navigation, extended character support)
+    - command: ^cd\s+[a-zA-Z0-9\.\-_/\s\:]*$
+      permission: allow
+    # cd chained with safe commands
+    - command: ^cd\s+[a-zA-Z0-9\.\-_/\s\:]*\s*&&\s*(mvn|npm|yarn|git|ls|pwd).*
+      permission: allow
+    # grep with quoted OR patterns (||)
+    - command: ^grep\s+"[^"]*\|\|[^"]*"\s+.*
+      permission: allow
+    # grep with quoted pipes, piped to safe tools
+    - command: ^grep\s+"[^"]*\|[^"]*"\s+.*\|\s*(cut|sort|uniq|head|tail|wc|grep|file|stat|basename|dirname).*
+      permission: allow
+    # Safe git info and config operations
+    - command: ^git\s+(show|describe|tag|remote\s+add|remote\s+remove|config).*
+      permission: allow
+    # Git commands chained with safe read operations
+    - command: ^git.*&&\s*git\s+(log|status|diff).*
+      permission: allow
+    # Python3 running specific .py files (safer than -c, covers all script types)
+    - command: ^python3\s+[a-zA-Z0-9_\-\.\/]+\.py.*
+      permission: allow
+    # Grep with context and output formatting flags (-A/-B/-C/-n/-r/-o/-E)
+    - command: ^grep\s+.*-[ABCnroE]+.*
+      permission: allow
+    # Remove temporary development files (tmp_rovodev_*)
+    - command: ^rm\s+(-f\s+)?tmp_rovodev_.*
+      permission: allow
+    # Safe git operations (blame, no-pager)
+    - command: ^git\s+(blame|--no-pager).*
+      permission: allow
+    # Run bash commands in a sandboxed environment - currently available for
+    # MacOS and Linux only. Enabling this option for Windows will prevent the
+    # agent from running powershell commands.
+    runInSandbox: false
