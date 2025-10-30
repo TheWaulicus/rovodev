@@ -1,0 +1,22 @@
+  # workspace
+  allowedExternalPaths:
+  - /Users/sherman/Bitbucket
+  - /Users/sherman/.rovodev
+  - /Users/sherman/.ssh
+
+announcementTracking:
+  announcementViewCounts: {}
+
+sessionFeedback:
+  permanentlyDisabled: false
+  lastFeedbackAsked: null
+
+atlassianBillingSite:
+  siteUrl: https://hello.atlassian.net
+
+smartTasks:
+  # Enable Smart Tasks discovery
+  enabled: true
+  # List of task discovery sources
+  sources:
+  - filesystem

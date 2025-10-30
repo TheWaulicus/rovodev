@@ -1,0 +1,99 @@
+version: 1
+
+agent:
+  # Additional system prompt to append to the agent's default system prompt
+  additionalSystemPrompt: null
+  # Enable streaming responses from the AI model
+  streaming: true
+  # Temperature setting for AI model responses (0.0-1.0)
+  temperature: 0.3
+  # Model ID to use for the agent. Valid options are: auto, gpt-5-2025-08-07,
+  # claude-sonnet-4@20250514
+  modelId: anthropic.claude-sonnet-4-5-20250929-v1:0
+  # Enable the deep planning tool for complex task planning
+  enableDeepPlanTool: true
+  experimental:
+    # Enable/disable the agent to run in shadow mode. This will run the agent on
+    # a temporary clone of your workspace, prompting you before any changes are
+    # applied to your working directory.
+    enableShadowMode: false
+    # Disable the built-in Atlassian MCP server so user can configure a custom
+    # one
+    disableBuiltinAtlassianMcp: false
+
+sessions:
+  # Automatically restore the last active session on startup
+  autoRestore: true
+  # Directory where session data is stored
+  persistenceDir: /Users/sherman/.rovodev/sessions
+
+atlassianConnections:
+  # Global jira projects user is part of
+  jiraProjects:
+  - url: https://hello.atlassian.net/browse/WPTIN
+    key: WPTIN
+    id: ari:cloud:jira:a436116f-02ce-4520-8fbb-7301462a1674:project/32560
+  # Directory where any local overrides are stored
+  localOverridePath: .rovodev/atlassian_connections.json
+  # Whether atlassian integration is enabled
+  enabled: true
+
+console:
+  # Output format for console display (markdown, simple, or raw)
+  outputFormat: markdown
+  # Show tool execution results in the console
+  showToolResults: true
+  # Editing mode for the prompt session
+  editingMode: EMACS
+  # Shell command to generate a command prompt that replaces the default '> '.
+  # For example, set 'STARSHIP_SHELL=rovodev starship prompt' to use Starship.
+  customCommandPrompt: null
+  # Maximum width of the console output in characters, or 'fill' to fill the
+  # terminal width
+  maxOutputWidth: fill
+
+logging:
+  # Path to the log file
+  path: /Users/sherman/.rovodev/rovodev.log
+  # Enable collection of prompts for debugging and analysis
+  enablePromptCollection: false
+
+mcp:
+  # Path to the MCP (Model Context Protocol) configuration file
+  mcpConfigPath: /Users/sherman/.rovodev/mcp.json
+  # List of allowed MCP server signatures
+  allowedMcpServers:
+  - stdio:npx:-y @upstash/context7-mcp
+  - stdio:uvx:mcp-server-git
+  - stdio:uvx:mcp-server-fetch
+  - stdio:npx:-y @modelcontextprotocol/server-sequential-thinking
+  - stdio:npx:-y @allpepper/memory-bank-mcp
+  # List of globally disabled MCP server signatures
+  disabledMcpServers: []
+
+toolPermissions:
+  # Default permission for tools not explicitly listed
+  default: allow
+  # Permission settings for specific tools
+  tools:
+    create_file: allow
+    delete_file: allow
+    move_file: allow
+    find_and_replace_code: allow
+    open_files: allow
+    expand_code_chunks: allow
+    expand_folder: allow
+    grep: allow
+    create_confluence_page: allow
+    update_confluence_page: allow
+    create_jira_issue: allow
+    update_jira_issue: allow
+    git_status: allow
+    git_branch: allow
+    git_create_branch: allow
+    git_checkout: allow
+    git_add: allow
+    git_commit: allow
+    git_add(repo_path, files): allow
+    git_commit(repo_path, message): allow
+    get_atlassian_site_urls(): allow
