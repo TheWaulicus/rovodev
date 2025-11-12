@@ -90,7 +90,7 @@
   - File operations: `mv`, `cp` with wildcards
   
   **TRUSTED patterns (auto-allowed):**
-  - Read-only: `cat`, `grep`, `ls`, `find` (without -delete), `head`, `tail`, `wc`
+  - Read-only: `cat` (ALL cat commands), `grep`, `ls`, `find` (without -delete), `head`, `tail`, `wc`
   - Safe git: `add`, `commit`, `checkout`, `pull`, `fetch`, `log`, `diff`, `status`
   - Version checks: `--version`, `-v`
   - Which/where: `which npm`, `type git`
