@@ -152,6 +152,14 @@ toolPermissions:
       permission: ask
     - command: .*>\s*(?!.*dev/null).*
       permission: ask
+
+    # TRUSTED PATTERNS - Allow automatically (lower precedence)
+    # Simple cat and echo commands (highest priority - checked first)
+    - command: ^cat.*
+      permission: allow
+    - command: ^echo.*
+      permission: allow
+    # Safe read-only operations with logical operators (&&, ||)
     - command: ^(wc|head|tail|cat|grep|ls|find|ps|yamllint|file|stat|test|du|basename|dirname)\s+.*(\|\||&&)\s*(echo|true|false).*
       permission: allow
     - command: ^(echo|du|ls|eza|head|cat|bat|tail|grep|rg|wc|sort|uniq|cut|awk|ps|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?(\s*\|\s*(echo|du|ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
@@ -163,10 +171,6 @@ toolPermissions:
     - command: ^find(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#+()!|=]*)?(\s*\|\s*(ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
       permission: allow
     - command: ^find.*-exec\s+(grep|cat|head|tail|wc|sort|uniq|cut|awk|echo|ls|du|file|stat|basename|dirname)\s+.*
-      permission: allow
-    - command: cat.*
-      permission: allow
-    - command: echo.*
       permission: allow
     - command: git diff.*
       permission: allow
