@@ -294,6 +294,42 @@ toolPermissions:
     # Piped commands to /dev/null
     - command: .*2>&1\s*$
       permission: allow
+    # gh CLI operations (GitHub)
+    - command: ^gh\s+(pr|issue|repo|auth|gist)\s+(list|view|status|token).*
+      permission: allow
+    # Firebase read operations
+    - command: ^firebase\s+(login:list|functions:log|projects:list|hosting:channel:list).*
+      permission: allow
+    # npm/yarn package info
+    - command: ^(npm|yarn)\s+(outdated|audit|why|info|view).*
+      permission: allow
+    # pip operations (read-only)
+    - command: ^pip(3)?\s+(list|show|search|check).*
+      permission: allow
+    # Python module help
+    - command: ^python3\s+-m\s+\S+\s+(--help|-h|--version).*
+      permission: allow
+    # SSH test connections
+    - command: ^ssh\s+-T\s+git@.*
+      permission: allow
+    # git push/pull with specific branches (common workflow)
+    - command: ^git\s+(push|pull)\s+(origin|upstream)\s+[a-zA-Z0-9\-_/]+.*
+      permission: allow
+    # System monitoring (read-only)
+    - command: ^(iostat|vmstat|uptime|w|who).*
+      permission: allow
+    # Environment variable viewing
+    - command: ^(printenv|env)(\s+\|?\s+grep)?.*
+      permission: allow
+    # SSL/certificate info
+    - command: ^(openssl\s+version|security\s+find-identity).*
+      permission: allow
+    # Disk/file info
+    - command: ^(file|stat|md5|shasum)\s+.*
+      permission: allow
+    # Safe npm/yarn run commands
+    - command: ^(npm|yarn)\s+run\s+.*
+      permission: allow
     # Run bash commands in a sandboxed environment - currently available for
     # MacOS and Linux only. Enabling this option for Windows will prevent the
     # agent from running powershell commands.

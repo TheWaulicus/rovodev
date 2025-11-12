@@ -107,6 +107,14 @@
   - Homebrew info: `brew list`, `brew info`, `brew search`
   - Docker info: `docker ps`, `docker images`, `docker version`
   - Error redirection: commands ending with `2>&1`
+  - gh CLI: `gh pr list`, `gh issue view`, `gh auth status`
+  - Firebase read: `firebase login:list`, `firebase functions:log`
+  - npm/yarn info: `npm outdated`, `yarn audit`, `npm run <script>`
+  - pip info: `pip list`, `pip show`
+  - git workflow: `git push origin <branch>`, `git pull origin <branch>`
+  - System monitoring: `iostat`, `vmstat`, `uptime`
+  - Environment: `printenv`, `env | grep`
+  - Security info: `openssl version`, `security find-identity`
   
   **Default:** `ask` if no pattern matches
 
