@@ -102,8 +102,10 @@
 
 - **If permission will be required:**
   1. Send macOS notification FIRST: `banner_notification(title="Approval Required", message="Command needs permission: [command]", sound=True, sound_name="Ping")`
-  2. Wait for notification to be delivered
-  3. Then execute the command and let Rovo Dev show the permission dialog
+  2. **DO NOT execute the command in the same tool call block**
+  3. Wait for the notification tool response to complete
+  4. In a SEPARATE subsequent action, execute the bash command
+  5. This ensures the notification appears BEFORE the permission dialog
 - **If command is trusted (auto-allowed):**
   1. Execute immediately without notification
 - This ensures you're always notified before being prompted for permission
