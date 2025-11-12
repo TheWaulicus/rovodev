@@ -77,6 +77,20 @@
 - Include clear description of what approval is needed
 - Example: `banner_notification(title="Approval Required", message="Command needs permission: git push --force", sound=True)`
 
+## Pre-Command Permission Check
+- **Before executing any bash command, check if it will require permission**
+- Review the command against config.yml bash permission patterns:
+  - UNTRUSTED patterns (ask permission): file deletion, git force ops, package installs, output redirection, etc.
+  - TRUSTED patterns (auto-allow): read-only commands, safe git ops, command chains
+  - Default: `ask` if no pattern matches
+- **If permission will be required:**
+  1. Send macOS notification with sound alert: `banner_notification(title="Approval Required", message="Command needs permission: [command]", sound=True, sound_name="Ping")`
+  2. Wait for notification to be delivered
+  3. Then execute the command and let Rovo Dev show the permission dialog
+- **If command is trusted (auto-allowed):**
+  1. Execute immediately without notification
+- This ensures you're always notified before being prompted for permission
+
 ## File Operations & Cleanup
 - Use `delete_file` tool for removing files (never use `rm` command)
 - Prefix all temporary/test files with `tmp_rovodev_` for easy identification
