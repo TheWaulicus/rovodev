@@ -159,8 +159,11 @@ toolPermissions:
       permission: allow
     - command: ^echo.*
       permission: allow
-    # Cat/echo heredoc with output to .md, .txt, .json files (documentation/config)
-    - command: ^(cd\s+[^\s]+\s+&&\s+)?(cat|echo)\s+<<.*>\s+[a-zA-Z0-9_\-/\.]+\.(md|txt|json|yaml|yml).*
+    # Cat/echo heredoc with output to safe file types (documentation/config/web)
+    - command: ^(cd\s+[^\s]+\s+&&\s+)?(cat|echo)\s+<<.*>\s+[a-zA-Z0-9_\-/\.]+\.(md|txt|json|yaml|yml|css|html|js|jsx|ts|tsx|xml|svg).*
+      permission: allow
+    # Cat/echo heredoc to .env.example, .gitignore files
+    - command: ^(cd\s+[^\s]+\s+&&\s+)?(cat|echo)\s+<<.*>\s+\.?(env\.example|gitignore).*
       permission: allow
     # Safe read-only operations with logical operators (&&, ||)
     - command: ^(wc|head|tail|cat|grep|ls|find|ps|yamllint|file|stat|test|du|basename|dirname)\s+.*(\|\||&&)\s*(echo|true|false).*
