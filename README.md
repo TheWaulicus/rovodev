@@ -76,6 +76,8 @@ Active MCP servers:
 - **git** - Git repository operations
 - **fetch** - Web content fetching
 - **sequential-thinking** - Complex problem solving
+- **bitbucket** - Bitbucket repository operations
+- **macos-notification** - macOS notification system integration
 
 ## Usage
 
