@@ -97,6 +97,16 @@
   - Notifications: `osascript -e 'display notification`
   - Safe commands: `echo`, `pwd`, `sleep`, `curl` (without redirection)
   - Temp file cleanup: `rm tmp_rovodev_*`
+  - Process management: `kill`, `pkill`, background jobs (`&`)
+  - JSON/YAML: `jq`, `yq`, `yamllint`
+  - Text processing: `sed`, `awk` (piped, without redirection)
+  - Archive info: `tar -t`, `tar -z`, `unzip -l`
+  - Process listing: `ps`, `top`, `htop`, `pgrep`, `lsof`
+  - Network info: `ifconfig`, `ip addr`, `netstat`
+  - Directory creation: `mkdir -p`
+  - Homebrew info: `brew list`, `brew info`, `brew search`
+  - Docker info: `docker ps`, `docker images`, `docker version`
+  - Error redirection: commands ending with `2>&1`
   
   **Default:** `ask` if no pattern matches
 

@@ -258,9 +258,41 @@ toolPermissions:
       permission: allow
     - command: ^sleep\s+\d+.*
       permission: allow
-    - command: cp ~/.rovodev/AGENTS.md ~/Github/rovodev/ 2>&1
+    # Kill/pkill commands for process management
+    - command: ^(kill|pkill)\s+.*
       permission: allow
-    - command: git push 2>&1
+    # Background process execution
+    - command: .*&\s*$
+      permission: allow
+    # JSON/YAML validation
+    - command: ^(jq|yq|yamllint)\s+.*
+      permission: allow
+    # Text processing (sed, awk without output redirection)
+    - command: ^(sed|awk)\s+(?!.*>).*\|\s*.*
+      permission: allow
+    # Tar/zip info commands
+    - command: ^(tar\s+-[tz]|unzip\s+-l).*
+      permission: allow
+    # Process listing
+    - command: ^(ps|top|htop|pgrep|lsof)\s+.*
+      permission: allow
+    # Network info
+    - command: ^(ifconfig|ip\s+addr|netstat)\s+.*
+      permission: allow
+    # Directory creation
+    - command: ^mkdir\s+-p\s+.*
+      permission: allow
+    # For loops with safe commands
+    - command: ^for\s+.*;\s*do\s+(echo|cat|grep|ls|find|wc|cp).*
+      permission: allow
+    # Homebrew read-only
+    - command: ^brew\s+(list|info|search|--version).*
+      permission: allow
+    # Docker info commands
+    - command: ^docker\s+(ps|images|version|info).*
+      permission: allow
+    # Piped commands to /dev/null
+    - command: .*2>&1\s*$
       permission: allow
     # Run bash commands in a sandboxed environment - currently available for
     # MacOS and Linux only. Enabling this option for Windows will prevent the
