@@ -79,12 +79,29 @@
 
 ## Pre-Command Permission Check
 - **Before executing any bash command, check if it will require permission**
-- Review the command against config.yml bash permission patterns:
-  - UNTRUSTED patterns (ask permission): file deletion, git force ops, package installs, output redirection, etc.
-  - TRUSTED patterns (auto-allow): read-only commands, safe git ops, command chains
-  - Default: `ask` if no pattern matches
+- Review the command against config.yml bash permission patterns in order:
+  
+  **UNTRUSTED patterns (will ask for permission):**
+  - File deletion: `rm`, `find -delete`
+  - Git force operations: `push --force`, `reset --hard`, `clean -f`, `branch -D`
+  - Package manager: `npm install`, `yarn add`, `npm publish`
+  - Arbitrary code: `python3 -c`, `eval`, `exec`
+  - Output redirection: `> file.txt` (except `> /dev/null`)
+  - File operations: `mv`, `cp` with wildcards
+  
+  **TRUSTED patterns (auto-allowed):**
+  - Read-only: `cat`, `grep`, `ls`, `find` (without -delete), `head`, `tail`, `wc`
+  - Safe git: `add`, `commit`, `checkout`, `pull`, `fetch`, `log`, `diff`, `status`
+  - Version checks: `--version`, `-v`
+  - Which/where: `which npm`, `type git`
+  - Notifications: `osascript -e 'display notification`
+  - Safe commands: `echo`, `pwd`, `sleep`, `curl` (without redirection)
+  - Temp file cleanup: `rm tmp_rovodev_*`
+  
+  **Default:** `ask` if no pattern matches
+
 - **If permission will be required:**
-  1. Send macOS notification with sound alert: `banner_notification(title="Approval Required", message="Command needs permission: [command]", sound=True, sound_name="Ping")`
+  1. Send macOS notification FIRST: `banner_notification(title="Approval Required", message="Command needs permission: [command]", sound=True, sound_name="Ping")`
   2. Wait for notification to be delivered
   3. Then execute the command and let Rovo Dev show the permission dialog
 - **If command is trusted (auto-allowed):**

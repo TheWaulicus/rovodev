@@ -1,5 +1,6 @@
 version: 1
 
+# Agent behavior and model settings
 agent:
   # Additional system prompt to append to the agent's default system prompt
   additionalSystemPrompt: null
@@ -12,6 +13,7 @@ agent:
   modelId: anthropic.claude-sonnet-4-5-20250929-v1:0
   # Enable the deep planning tool for complex task planning
   enableDeepPlanTool: true
+  # Enable/disable experimental features
   experimental:
     # Enable/disable the agent to run in shadow mode. This will run the agent on
     # a temporary clone of your workspace, prompting you before any changes are
@@ -21,12 +23,14 @@ agent:
     # one
     disableBuiltinAtlassianMcp: false
 
+# Session management settings
 sessions:
   # Automatically restore the last active session on startup
   autoRestore: true
   # Directory where session data is stored
   persistenceDir: /Users/sherman/.rovodev/sessions
 
+# Atlassian product integration settings
 atlassianConnections:
   # Global jira projects user is part of
   jiraProjects:
@@ -38,6 +42,7 @@ atlassianConnections:
   # Whether atlassian integration is enabled
   enabled: true
 
+# Console and UI behavior settings
 console:
   # Output format for console display (markdown, simple, or raw)
   outputFormat: markdown
@@ -52,12 +57,14 @@ console:
   # terminal width
   maxOutputWidth: fill
 
+# Logging and prompt collection settings
 logging:
   # Path to the log file
   path: /Users/sherman/.rovodev/rovodev.log
   # Enable collection of prompts for debugging and analysis
   enablePromptCollection: false
 
+# Model Context Protocol server configuration
 mcp:
   # Path to the MCP (Model Context Protocol) configuration file
   mcpConfigPath: /Users/sherman/.rovodev/mcp.json
@@ -68,9 +75,12 @@ mcp:
   - stdio:uvx:mcp-server-fetch
   - stdio:npx:-y @modelcontextprotocol/server-sequential-thinking
   - stdio:npx:-y @allpepper/memory-bank-mcp
+  - stdio:npx:-y @aashari/mcp-server-atlassian-bitbucket
+  - stdio:uvx:macos-notification-mcp
   # List of globally disabled MCP server signatures
   disabledMcpServers: []
 
+# Tool and command permission settings
 toolPermissions:
   # Default permission for tools not explicitly listed
   default: allow
@@ -102,10 +112,6 @@ toolPermissions:
     default: ask
     # List of specific bash commands with their permission settings
     commands:
-    # UNTRUSTED PATTERNS - Explicitly ask for permission (highest precedence)
-    # - Use these patterns to define exceptions to the trusted patterns below.
-    # - Include commands that can modify or delete files, or perform other potentially harmful actions
-    # fd
     - command: ^fd[^|]*-x\s
       permission: ask
     - command: ^fd[^|]*-x$
@@ -114,15 +120,12 @@ toolPermissions:
       permission: ask
     - command: ^fd[^|]*--exec$
       permission: ask
-    # find
     - command: ^find.*-delete
       permission: ask
-    # find -exec with arbitrary commands (not safe read-only tools)
     - command: ^find.*-exec\s+(?!grep\s|cat\s|head\s|tail\s|wc\s|sort\s|uniq\s|cut\s|awk\s|echo\s|ls\s|du\s|file\s|stat\s|basename\s|dirname\s).*
       permission: ask
     - command: ^find.*-execdir
       permission: ask
-    # git
     - command: ^git.*push.*--force
       permission: ask
     - command: ^git.*reset.*--hard
@@ -131,7 +134,6 @@ toolPermissions:
       permission: ask
     - command: ^git.*rm.*
       permission: ask
-    # package manager
     - command: ^(yarn|npm).*install.*
       permission: ask
     - command: ^(yarn|npm).*(add|remove|uninstall).*
@@ -140,39 +142,26 @@ toolPermissions:
       permission: ask
     - command: ^(yarn|npm).*global.*
       permission: ask
-    # awk operations with file modification risk (output redirection, in-place editing)
     - command: ^awk.*(>|--?in-place).*
       permission: ask
-    # Git operations with modification/remote interaction risks (push, revert, merge, rebase, reset --hard, clean -f, rm)
     - command: ^git.*(push|revert|merge|rebase|reset.*--hard|clean.*-f|rm).*
       permission: ask
-    # Git branch operations with destructive potential (force delete, move/rename)
     - command: ^git\s+branch\s+.*(-D|-M).*
       permission: ask
-    # Python3 arbitrary code execution (-c flag)
     - command: ^python3\s+-c\s+.*
       permission: ask
-    # Output redirection to files (security exception - prevents data exfiltration)
     - command: .*>\s*(?!.*dev/null).*
       permission: ask
-
-    # TRUSTED PATTERNS - Allow automatically (lower precedence)
-    # Safe read-only operations with logical operators (&&, ||)
     - command: ^(wc|head|tail|cat|grep|ls|find|ps|yamllint|file|stat|test|du|basename|dirname)\s+.*(\|\||&&)\s*(echo|true|false).*
       permission: allow
-    # Safe command chains (all basic commands including text processing tools)
     - command: ^(echo|du|ls|eza|head|cat|bat|tail|grep|rg|wc|sort|uniq|cut|awk|ps|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?(\s*\|\s*(echo|du|ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
       permission: allow
-    # Safe commands with /dev/null redirection (error suppression only)
     - command: ^(echo|du|ls|eza|head|cat|bat|tail|grep|rg|wc|sort|uniq|cut|awk|find|fd|ps|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?(\s*\|\s*(echo|du|ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*\s*(2>/dev/null|&>/dev/null|>/dev/null)(\s*\|\|\s*echo.*)?$
       permission: allow
-    # fd commands (safe patterns pass, risky variants caught above)
     - command: ^fd(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#+()!|=]*)?(\s*\|\s*(ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
       permission: allow
-    # find commands (safe patterns pass, risky variants caught above)
     - command: ^find(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#+()!|=]*)?(\s*\|\s*(ls|fd|eza|head|cat|bat|tail|grep|rg|wc|find|sort|uniq|cut|awk|file|stat|basename|dirname)(\s+[a-zA-Z0-9\.\-_/\s'\"*^$\\#=()!|]*)?)*(\s*\|\|\s*echo.*)?$
       permission: allow
-    # find -exec with safe read-only tools (simplified for performance)
     - command: ^find.*-exec\s+(grep|cat|head|tail|wc|sort|uniq|cut|awk|echo|ls|du|file|stat|basename|dirname)\s+.*
       permission: allow
     - command: cat.*
@@ -187,7 +176,6 @@ toolPermissions:
       permission: allow
     - command: git remote -v
       permission: allow
-    # Safe git repository operations
     - command: ^git add.*
       permission: allow
     - command: ^git commit.*
@@ -206,7 +194,6 @@ toolPermissions:
       permission: allow
     - command: ^git branch.*
       permission: allow
-    # Safe package manager operations
     - command: ^(yarn|npm) (build|test|run).*
       permission: allow
     - command: ^yarn (info|why|list).*
@@ -229,37 +216,72 @@ toolPermissions:
       permission: allow
     - command: git rev-parse --is-inside-work-tree
       permission: allow
-    # Simple cd commands (directory navigation, extended character support)
     - command: ^cd\s+[a-zA-Z0-9\.\-_/\s\:]*$
       permission: allow
-    # cd chained with safe commands
     - command: ^cd\s+[a-zA-Z0-9\.\-_/\s\:]*\s*&&\s*(mvn|npm|yarn|git|ls|pwd).*
       permission: allow
-    # grep with quoted OR patterns (||)
     - command: ^grep\s+"[^"]*\|\|[^"]*"\s+.*
       permission: allow
-    # grep with quoted pipes, piped to safe tools
     - command: ^grep\s+"[^"]*\|[^"]*"\s+.*\|\s*(cut|sort|uniq|head|tail|wc|grep|file|stat|basename|dirname).*
       permission: allow
-    # Safe git info and config operations
     - command: ^git\s+(show|describe|tag|remote\s+add|remote\s+remove|config).*
       permission: allow
-    # Git commands chained with safe read operations
     - command: ^git.*&&\s*git\s+(log|status|diff).*
       permission: allow
-    # Python3 running specific .py files (safer than -c, covers all script types)
     - command: ^python3\s+[a-zA-Z0-9_\-\.\/]+\.py.*
       permission: allow
-    # Grep with context and output formatting flags (-A/-B/-C/-n/-r/-o/-E)
     - command: ^grep\s+.*-[ABCnroE]+.*
       permission: allow
-    # Remove temporary development files (tmp_rovodev_*)
     - command: ^rm\s+(-f\s+)?tmp_rovodev_.*
       permission: allow
-    # Safe git operations (blame, no-pager)
     - command: ^git\s+(blame|--no-pager).*
+      permission: allow
+    - command: git.*
+      permission: allow
+    - command: git config user.name "Ice Zoo Wolves" 2>/dev/null
+      permission: allow
+    - command: git config user.email "wolves@icezoo.local" 2>/dev/null
+      permission: allow
+    - command: gh --version 2>/dev/null
+      permission: allow
+    - command: ^osascript\s+-e\s+'display notification.*
+      permission: allow
+    - command: ^(which|where|type)\s+.*
+      permission: allow
+    - command: ^[a-zA-Z0-9\-_]+\s+(--version|-v|version).*
+      permission: allow
+    - command: ^(curl|wget)\s+(?!.*>).*
+      permission: allow
+    - command: ^firebase\s+(apps:sdkconfig|projects:list|use).*
+      permission: allow
+    - command: ^timeout\s+\d+\s+(curl|wget|firebase\s+serve).*
+      permission: allow
+    - command: ^sleep\s+\d+.*
+      permission: allow
+    - command: cp ~/.rovodev/AGENTS.md ~/Github/rovodev/ 2>&1
+      permission: allow
+    - command: git push 2>&1
       permission: allow
     # Run bash commands in a sandboxed environment - currently available for
     # MacOS and Linux only. Enabling this option for Windows will prevent the
     # agent from running powershell commands.
     runInSandbox: false
+  # List of file or directory paths that are allowed to be accessed outside the
+  # workspace
+  allowedExternalPaths: []
+
+announcementTracking:
+  announcementViewCounts: {}
+
+sessionFeedback:
+  permanentlyDisabled: false
+  lastFeedbackAsked: null
+
+atlassianBillingSite: null
+
+smartTasks:
+  # Enable Smart Tasks discovery
+  enabled: true
+  # List of task discovery sources
+  sources:
+  - filesystem
