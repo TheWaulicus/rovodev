@@ -70,6 +70,13 @@
 - Optionally add sound for important completions
 - Example: `banner_notification(title="Task Complete", message="Configuration updated successfully", sound=True)`
 
+## User Input Required Notifications
+- **Always send a macOS notification when user input/approval is required**
+- Trigger notifications before requesting permission for commands or decisions
+- Use sound alerts to get attention: `sound=True` or `sound_name="Ping"`
+- Include clear description of what approval is needed
+- Example: `banner_notification(title="Approval Required", message="Command needs permission: git push --force", sound=True)`
+
 ## File Operations & Cleanup
 - Use `delete_file` tool for removing files (never use `rm` command)
 - Prefix all temporary/test files with `tmp_rovodev_` for easy identification
