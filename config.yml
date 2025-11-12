@@ -159,6 +159,9 @@ toolPermissions:
       permission: allow
     - command: ^echo.*
       permission: allow
+    # Cat/echo heredoc with output to .md, .txt, .json files (documentation/config)
+    - command: ^(cd\s+[^\s]+\s+&&\s+)?(cat|echo)\s+<<.*>\s+[a-zA-Z0-9_\-/\.]+\.(md|txt|json|yaml|yml).*
+      permission: allow
     # Safe read-only operations with logical operators (&&, ||)
     - command: ^(wc|head|tail|cat|grep|ls|find|ps|yamllint|file|stat|test|du|basename|dirname)\s+.*(\|\||&&)\s*(echo|true|false).*
       permission: allow
