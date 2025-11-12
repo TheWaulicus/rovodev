@@ -88,9 +88,29 @@ Active MCP servers:
    cp AGENTS.md ~/.rovodev/
    ```
 
-2. Restart Rovo Dev to apply changes
+2. Set up environment variables (copy .env.example to ~/.rovodev/.env):
+   ```bash
+   cp .env.example ~/.rovodev/.env
+   # Edit ~/.rovodev/.env with your credentials
+   ```
 
-3. Configuration is loaded automatically on startup
+3. Ensure `uvx` is installed for the notification MCP:
+   ```bash
+   # Install uv if needed
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+4. Restart Rovo Dev to apply changes
+
+5. Configuration is loaded automatically on startup
+
+## Task Completion Notifications
+
+All tasks now automatically trigger macOS notifications when complete:
+- **Banner notifications** with task summary
+- **Optional sound alerts** for important tasks
+- Uses the `macos-notification-mcp` server
+- Notifications appear in macOS Notification Center
 
 ## Backup & Version Control
 
