@@ -128,6 +128,15 @@
   1. Execute immediately without notification
 - This ensures you're always notified before being prompted for permission
 
+## Monitoring Approval Requests
+- **Track which commands still require approval**
+- When a command requires permission that seems safe:
+  1. Note the full command in session memory
+  2. Analyze if it matches existing patterns or needs a new one
+  3. Suggest adding it to config.yml if it's commonly used and safe
+- At end of session, review any commands that required approval multiple times
+- Proactively suggest pattern additions to reduce future prompts
+
 ## File Operations & Cleanup
 - Use `delete_file` tool for removing files (never use `rm` command)
 - Prefix all temporary/test files with `tmp_rovodev_` for easy identification
