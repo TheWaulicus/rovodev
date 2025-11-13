@@ -150,6 +150,11 @@ toolPermissions:
       permission: ask
     - command: ^python3\s+-c\s+.*
       permission: ask
+    # EXCEPTIONS TO OUTPUT REDIRECTION (checked before generic > pattern)
+    # Cat/echo with cd prefix for safe development files
+    - command: ^cd\s+[^\s]+\s+&&\s+(cat|echo)\s+(>>?|<<).*\.(css|html|js|jsx|ts|tsx|json|md|txt|yaml|yml|xml|svg).*
+      permission: allow
+    
     - command: .*>\s*(?!.*dev/null).*
       permission: ask
 
